@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Shopping list</string>
     <string name="title_item_detail">Item Detail</string>
+    <string name="Active">Active</string>
+    <string name="Archive">Archive</string>
+    <string name="remove">Remove</string>
 </resources>

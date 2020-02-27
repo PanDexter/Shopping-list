@@ -1,8 +1,9 @@
 package com.szeptun.shoppinglist.dataaccess.repository
 
 import com.szeptun.shoppinglist.dataaccess.database.dao.ItemsListDao
-import com.szeptun.shoppinglist.dataaccess.database.entity.ItemsListEntity
-import com.szeptun.shoppinglist.entity.Item
+import com.szeptun.shoppinglist.dataaccess.database.entity.ProductsListEntity
+import com.szeptun.shoppinglist.entity.ListState
+import com.szeptun.shoppinglist.entity.Product
 import com.szeptun.shoppinglist.entity.ShoppingList
 import io.reactivex.Observable
 import javax.inject.Inject
@@ -13,20 +14,20 @@ class ShoppingListRepository @Inject constructor(private val itemsListDao: Items
         itemsListDao.getAllLists()
             .filter { it.isNotEmpty() }
             .toObservable()
-            .map(::mapItemsListToShoppingList)
+            .map(::mapProductsListToShoppingList)
 
-    fun getListsByArchive(isArchive: Boolean): Observable<List<ShoppingList>> =
-        itemsListDao.getListsByArchive(isArchive)
+    fun getListsByState(listState: ListState): Observable<List<ShoppingList>> =
+        itemsListDao.getListByState(listState)
             .filter { it.isNotEmpty() }
             .toObservable()
-            .map(::mapItemsListToShoppingList)
+            .map(::mapProductsListToShoppingList)
 
-    private fun mapItemsListToShoppingList(itemsListEntity: List<ItemsListEntity>) = itemsListEntity.map {
+    private fun mapProductsListToShoppingList(productsListEntity: List<ProductsListEntity>) = productsListEntity.map {
         ShoppingList(
             name = it.shoppingList.name,
-            isArchive = it.shoppingList.isArchive,
+            listState = it.shoppingList.listState,
             date = it.shoppingList.date,
-            itemsList = it.items.map { item -> Item(name = item.name, quantity = item.quantity) }
+            itemsList = it.products.map { item -> Product(name = item.name) }
         )
     }
 }

@@ -4,10 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class ItemEntity(
+data class ProductEntity(
     @PrimaryKey
-    val itemId: Long,
+    val productId: Long,
     val listId: Long,
-    val name: String,
-    val quantity: String
+    val name: String
 )

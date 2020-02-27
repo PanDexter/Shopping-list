@@ -6,10 +6,13 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class FragmentsModule{
+abstract class FragmentsModule {
+    
+    @FragmentScope
     @ContributesAndroidInjector
     abstract fun bindShoppingListFragment(): ListsFragment
 
+    @FragmentScope
     @ContributesAndroidInjector
     abstract fun bindShoppingListDetailsFragment(): ShoppingListFragment
 }

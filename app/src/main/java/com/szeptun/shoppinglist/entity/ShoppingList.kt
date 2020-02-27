@@ -1,10 +1,15 @@
 package com.szeptun.shoppinglist.entity
 
-import java.time.LocalDateTime
+import org.joda.time.LocalDateTime
+
 
 data class ShoppingList(
     val name: String,
-    val isArchive: Boolean,
+    val listState: ListState,
     val date: LocalDateTime,
-    val itemsList: List<Item>
+    val itemsList: List<Product>
 )
+
+enum class ListState {
+    ACTIVE, ARCHIVE
+}
