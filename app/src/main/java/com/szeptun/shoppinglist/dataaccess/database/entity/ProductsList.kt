@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Relation
 
-data class ProductsListEntity(
+data class ProductsList(
     @Embedded
     val shoppingList: ShoppingListEntity,
     @Relation(

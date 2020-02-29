@@ -8,8 +8,11 @@ import org.joda.time.LocalDateTime
 @Entity
 data class ShoppingListEntity(
     @PrimaryKey
-    val shoppingListId: Long,
+    val shoppingListId: Int = 0,
     val name: String,
     val listState: ListState,
     val date: LocalDateTime
 )
+
+fun ProductsList.withShoppingListId(shoppingListId: Int) =
+    products.map { it.copy(listId = shoppingListId) }

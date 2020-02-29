@@ -43,6 +43,7 @@
             android:layout_height="wrap_content"
             android:text="@string/Archive"
             android:textSize="@dimen/item_text_size"
+            app:btnVisibility="@{listModel.listState}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

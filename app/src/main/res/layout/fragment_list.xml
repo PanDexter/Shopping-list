@@ -9,18 +9,15 @@
             type="com.szeptun.shoppinglist.entity.ListState" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
+        android:id="@+id/list_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_list"
-            android:layout_width="@dimen/match_constraints"
-            android:layout_height="@dimen/match_constraints"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_add"
@@ -29,10 +26,9 @@
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin"
             app:fabVisibility="@{listState}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            android:layout_gravity="bottom|right"
             android:src="@android:drawable/ic_input_add"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 
 </layout>

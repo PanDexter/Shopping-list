@@ -4,13 +4,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.szeptun.shoppinglist.databinding.ItemProductBinding
+import com.szeptun.shoppinglist.entity.ListState
 import com.szeptun.shoppinglist.entity.Product
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import javax.inject.Inject
 
-class ProductsAdapter : RecyclerView.Adapter<ProductViewHolder>() {
+class ProductsAdapter @Inject constructor() : RecyclerView.Adapter<ProductViewHolder>() {
 
     var items: List<Product> = arrayListOf()
+    var listState: ListState? = null
     private var selectedItemSubject: PublishSubject<Int> = PublishSubject.create()
     val selectedItemStream: Observable<Int> = selectedItemSubject
 
@@ -23,10 +26,10 @@ class ProductsAdapter : RecyclerView.Adapter<ProductViewHolder>() {
     override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        holder.bind(item = items[position])
+        listState?.let { holder.bind(item = items[position], state = it) }
     }
 
-    fun setDataWithDiff(productList: List<Product>){
+    fun setDataWithDiff(productList: List<Product>) {
         this.items = productList
         notifyDataSetChanged()
     }

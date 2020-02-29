@@ -8,6 +8,10 @@
         <variable
             name="productModel"
             type="com.szeptun.shoppinglist.entity.Product" />
+
+        <variable
+            name="listState"
+            type="com.szeptun.shoppinglist.entity.ListState" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,12 +30,14 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_remove"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/fab_margin"
             android:contentDescription="@string/remove"
+            fabVisibility="@{listState}"
+            android:backgroundTint="@color/colorPrimary"
             android:src="@android:drawable/ic_delete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"

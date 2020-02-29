@@ -7,7 +7,6 @@ import com.szeptun.shoppinglist.dataaccess.database.converter.ListStateConverter
 import com.szeptun.shoppinglist.dataaccess.database.converter.LocalDateTimeConverter
 import com.szeptun.shoppinglist.dataaccess.database.dao.ItemsListDao
 import com.szeptun.shoppinglist.dataaccess.database.entity.ProductEntity
-import com.szeptun.shoppinglist.dataaccess.database.entity.ProductsListEntity
 import com.szeptun.shoppinglist.dataaccess.database.entity.ShoppingListEntity
 import javax.inject.Singleton
 

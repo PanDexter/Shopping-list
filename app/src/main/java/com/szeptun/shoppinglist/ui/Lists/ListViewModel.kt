@@ -1,9 +1,10 @@
 package com.szeptun.shoppinglist.ui.Lists
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import com.szeptun.shoppinglist.commons.DummyData
 import com.szeptun.shoppinglist.domain.GetListsByState
+import com.szeptun.shoppinglist.domain.SaveShoppingList
 import com.szeptun.shoppinglist.entity.ListState
 import com.szeptun.shoppinglist.entity.ShoppingList
 import io.reactivex.Observable
@@ -15,10 +16,9 @@ import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
 class ListViewModel @Inject constructor(
-    application: Application,
-    private val getListsByState: GetListsByState
-//    private val listState: ListState
-) : AndroidViewModel(application) {
+    private val getListsByState: GetListsByState,
+    private val listState: ListState
+) : ViewModel() {
 
     private val onClearDisposable = CompositeDisposable()
     private val shoppingListItemsSubject = BehaviorSubject.create<List<ShoppingList>>()
@@ -26,19 +26,19 @@ class ListViewModel @Inject constructor(
     val shoppingListItemsStream: Observable<List<ShoppingList>>
         get() = shoppingListItemsSubject.observeOn(AndroidSchedulers.mainThread())
 
-//    init {
-//        getShoppingLists()
-//    }
+    init {
+        getShoppingLists()
+    }
 
-//    private fun getShoppingLists() {
-//        getListsByState.execute(listState)
-//            .observeOn(Schedulers.io())
-//            .subscribe({
-//                shoppingListItemsSubject.onNext(it)
-//            }, {
-//                Log.e(LOG_TAG, "Error during fething shopping lists")
-//            }).addTo(onClearDisposable)
-//    }
+    private fun getShoppingLists() {
+        getListsByState.execute(listState)
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                shoppingListItemsSubject.onNext(it)
+            }, {
+                Log.e(LOG_TAG, "Error during fething shopping lists")
+            }).addTo(onClearDisposable)
+    }
 
     override fun onCleared() {
         onClearDisposable.clear()
