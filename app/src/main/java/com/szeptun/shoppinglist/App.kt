@@ -10,5 +10,4 @@ class App : DaggerApplication() {
         DaggerApplicationComponent
             .factory()
             .create(this)
-
 }

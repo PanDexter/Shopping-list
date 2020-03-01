@@ -7,7 +7,7 @@ import org.joda.time.LocalDateTime
 
 @Entity
 data class ShoppingListEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     val shoppingListId: Int = 0,
     val name: String,
     val listState: ListState,

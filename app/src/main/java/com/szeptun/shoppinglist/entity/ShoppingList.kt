@@ -6,6 +6,7 @@ import org.joda.time.LocalDateTime
 
 @Parcelize
 data class ShoppingList(
+    val id: Int,
     val name: String,
     val listState: ListState,
     val date: LocalDateTime,

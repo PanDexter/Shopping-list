@@ -1,6 +1,6 @@
 package com.szeptun.shoppinglist.dataaccess.repository
 
-import com.szeptun.shoppinglist.dataaccess.database.dao.ItemsListDao
+import com.szeptun.shoppinglist.dataaccess.database.dao.ProductsListDao
 import com.szeptun.shoppinglist.dataaccess.database.entity.ProductEntity
 import com.szeptun.shoppinglist.dataaccess.database.entity.ProductsList
 import com.szeptun.shoppinglist.dataaccess.database.entity.ShoppingListEntity
@@ -8,46 +8,59 @@ import com.szeptun.shoppinglist.entity.ListState
 import com.szeptun.shoppinglist.entity.Product
 import com.szeptun.shoppinglist.entity.ShoppingList
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class ShoppingListRepository @Inject constructor(private val itemsListDao: ItemsListDao) {
+class ShoppingListRepository @Inject constructor(private val productsListDao: ProductsListDao) {
 
     fun getAllLists(): Observable<List<ShoppingList>> =
-        itemsListDao.getAllLists()
+        productsListDao.getAllLists()
             .filter { it.isNotEmpty() }
             .map(::mapProductsListToShoppingList)
             .toObservable()
 
-    fun getListsByState(listState: ListState): Observable<List<ShoppingList>> =
-        itemsListDao.getListByState(listState)
-            .filter { it.isNotEmpty() }
+    fun getListsByState(listState: ListState): Flowable<List<ShoppingList>> =
+        productsListDao.getListByState(listState)
             .map(::mapProductsListToShoppingList)
-            .toObservable()
 
     fun saveList(shoppingList: ShoppingList): Completable {
         val productsList = ProductsList(
             ShoppingListEntity(
-                shoppingListId = 0,
+                shoppingListId = shoppingList.id,
                 name = shoppingList.name,
                 date = shoppingList.date,
                 listState = shoppingList.listState
             ),
-            products = shoppingList.itemsList.map { ProductEntity(0, 0, it.name) }
+            products = shoppingList.itemsList.map { ProductEntity(it.id, shoppingList.id, it.name) }
         )
 
         return Completable.fromAction {
-            itemsListDao.insertShoppingListWithProducts(productsList)
-        }
+            productsListDao.insertShoppingListWithProducts(productsList)
+        }.subscribeOn(Schedulers.io())
     }
 
-    private fun mapProductsListToShoppingList(productsListEntity: List<ProductsList>) =
-        productsListEntity.map {
+    fun removeProduct(product: Product): Completable {
+        return Completable.fromAction {
+            val productEntity = productsListDao.get(product.id)
+            productsListDao.delete(productEntity)
+        }.subscribeOn(Schedulers.io())
+    }
+
+    private fun mapProductsListToShoppingList(productsListEntity: List<ProductsList>?) =
+        productsListEntity?.map {
             ShoppingList(
+                id = it.shoppingList.shoppingListId,
                 name = it.shoppingList.name,
                 listState = it.shoppingList.listState,
                 date = it.shoppingList.date,
-                itemsList = it.products.map { item -> Product(name = item.name) }
+                itemsList = it.products.map { item ->
+                    Product(
+                        id = item.productId,
+                        name = item.name
+                    )
+                }
             )
-        }
+        }?.sortedByDescending { it.date } ?: emptyList()
 }

@@ -2,7 +2,6 @@ package com.szeptun.shoppinglist.ui.Lists
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.szeptun.shoppinglist.commons.DummyData
 import com.szeptun.shoppinglist.domain.GetListsByState
 import com.szeptun.shoppinglist.domain.SaveShoppingList
 import com.szeptun.shoppinglist.entity.ListState
@@ -17,6 +16,7 @@ import javax.inject.Inject
 
 class ListViewModel @Inject constructor(
     private val getListsByState: GetListsByState,
+    private val saveShoppingList: SaveShoppingList,
     private val listState: ListState
 ) : ViewModel() {
 
@@ -37,10 +37,18 @@ class ListViewModel @Inject constructor(
                 shoppingListItemsSubject.onNext(it)
             }, {
                 Log.e(LOG_TAG, "Error during fething shopping lists")
-            }).addTo(onClearDisposable)
+            })
+            .addTo(onClearDisposable)
+    }
+
+    fun saveList(shoppingList: ShoppingList) {
+        saveShoppingList.execute(shoppingList)
+            .subscribe()
+            .addTo(onClearDisposable)
     }
 
     override fun onCleared() {
+        super.onCleared()
         onClearDisposable.clear()
     }
 

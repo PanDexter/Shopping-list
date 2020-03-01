@@ -1,12 +1,11 @@
 package com.szeptun.shoppinglist.ui.ShoppingList
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.databinding.BindingAdapter
+import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.szeptun.shoppinglist.R
@@ -14,9 +13,11 @@ import com.szeptun.shoppinglist.databinding.ActivityShoppinglistBinding
 import com.szeptun.shoppinglist.entity.ListState
 import com.szeptun.shoppinglist.entity.Product
 import com.szeptun.shoppinglist.entity.ShoppingList
+import com.szeptun.shoppinglist.ui.ShoppingList.recycler.ProductsAdapter
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
+import org.joda.time.LocalDateTime
 import javax.inject.Inject
 
 class ShoppingListActivity : DaggerAppCompatActivity() {
@@ -33,9 +34,16 @@ class ShoppingListActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_shoppinglist)
-        intent.apply {
-            shoppingList = getParcelableExtra(SHOPPING_LIST) as ShoppingList?
-        }
+        shoppingList = intent.getParcelableExtra(SHOPPING_LIST) as ShoppingList? ?: ShoppingList(
+            id = 0,
+            name = "Name",
+            listState = ListState.ACTIVE,
+            date = LocalDateTime.now(),
+            itemsList = emptyList()
+        )
+
+        binding.name.setText(shoppingList?.name)
+        binding.listState = shoppingList?.listState
         setupRecycler()
         observeDeleteClicks()
         onSaveButtonClick()
@@ -43,10 +51,28 @@ class ShoppingListActivity : DaggerAppCompatActivity() {
         onNewItemAdd()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(SHOPPING_LIST_STATE, shoppingList)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        when (val shoppingList =
+            savedInstanceState.getParcelable(SHOPPING_LIST_STATE) as ShoppingList?) {
+            null -> return
+            else -> {
+                this.shoppingList = shoppingList
+                productsAdapter.setDataWithDiff(shoppingList.itemsList)
+            }
+        }
+    }
+
     private fun onSaveButtonClick() {
         binding.saveList.setOnClickListener {
             shoppingList?.let { list ->
                 viewModel.saveList(list)
+                finish()
             }
         }
     }
@@ -73,10 +99,13 @@ class ShoppingListActivity : DaggerAppCompatActivity() {
     private fun onNewItemAdd() {
         binding.addProduct.saveProduct.setOnClickListener {
             shoppingList?.let {
-                val newList = it.itemsList + Product(binding.addProduct.productName.text.toString())
-                shoppingList = it.copy(itemsList = newList)
+                val newList =
+                    it.itemsList + Product(0, binding.addProduct.productName.text.toString())
+                shoppingList = shoppingList?.copy(itemsList = newList)
                 productsAdapter.setDataWithDiff(newList)
             }
+            hideKeyboard()
+            binding.addProduct.productName.text.clear()
         }
     }
 
@@ -97,25 +126,27 @@ class ShoppingListActivity : DaggerAppCompatActivity() {
             val filteredList =
                 productsAdapter.items.filterIndexed { index, _ -> index != it }
             shoppingList = shoppingList?.copy(itemsList = filteredList)
+            if (productsAdapter.items[it].id != 0) {
+                viewModel.removeProduct(productsAdapter.items[it])
+            }
             productsAdapter.setDataWithDiff(filteredList)
         }, {
             Log.e(ERROR_TAG, "Error while observing delete clicks")
         }).addTo(disposable)
     }
 
+    private fun hideKeyboard() {
+        val view = this.currentFocus
+        view?.let { v ->
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            imm?.hideSoftInputFromWindow(v.windowToken, 0)
+        }
+    }
+
     companion object {
         const val SHOPPING_LIST = "shopping_list"
+        private const val SHOPPING_LIST_STATE = "shopping_list_state"
         private val ERROR_TAG = ShoppingListActivity::class.java.simpleName
     }
 
-}
-
-@BindingAdapter("viewVisibility")
-fun ConstraintLayout.viewVisibility(listState: ListState?) {
-    listState?.let {
-        visibility = when (listState) {
-            ListState.ACTIVE -> View.VISIBLE
-            ListState.ARCHIVE -> View.GONE
-        }
-    }
 }

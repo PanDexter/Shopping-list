@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin"
-            app:fabVisibility="@{listState}"
+            app:viewVisibility="@{listState}"
             android:layout_gravity="bottom|right"
             android:src="@android:drawable/ic_input_add"/>
 

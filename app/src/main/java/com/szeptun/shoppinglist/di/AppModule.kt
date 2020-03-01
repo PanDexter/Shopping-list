@@ -1,6 +1,5 @@
 package com.szeptun.shoppinglist.di
 
-import android.content.Context
 import androidx.room.Room
 import com.szeptun.shoppinglist.App
 import com.szeptun.shoppinglist.dataaccess.database.ShoppingListDatabase
@@ -17,7 +16,7 @@ abstract class AppModule {
         @Provides
         @JvmStatic
         @Singleton
-        fun providesItemListDao(database: ShoppingListDatabase) = database.shoppingListDao()
+        fun providesItemListDao(database: ShoppingListDatabase) = database.productsListDao()
 
         @Provides
         @JvmStatic
@@ -27,10 +26,5 @@ abstract class AppModule {
             ShoppingListDatabase::class.java,
             "shoppinglistdb"
         ).build()
-
-        @Provides
-        @JvmStatic
-        @AppContext
-        fun providesAppContext(app: App): Context = app.applicationContext
     }
 }

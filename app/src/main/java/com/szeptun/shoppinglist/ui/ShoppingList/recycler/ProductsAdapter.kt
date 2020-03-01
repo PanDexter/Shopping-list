@@ -1,4 +1,4 @@
-package com.szeptun.shoppinglist.ui.ShoppingList
+package com.szeptun.shoppinglist.ui.ShoppingList.recycler
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

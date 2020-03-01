@@ -1,4 +1,4 @@
-package com.szeptun.shoppinglist.ui.ShoppingList
+package com.szeptun.shoppinglist.ui.ShoppingList.recycler
 
 import androidx.recyclerview.widget.RecyclerView
 import com.szeptun.shoppinglist.databinding.ItemProductBinding

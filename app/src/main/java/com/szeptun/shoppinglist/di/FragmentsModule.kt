@@ -1,7 +1,6 @@
 package com.szeptun.shoppinglist.di
 
 import com.szeptun.shoppinglist.ui.Lists.ListsFragment
-import com.szeptun.shoppinglist.ui.ShoppingList.ShoppingListActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

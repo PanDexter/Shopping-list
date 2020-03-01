@@ -6,15 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.core.os.bundleOf
-import androidx.databinding.BindingAdapter
 import androidx.fragment.app.ListFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.szeptun.shoppinglist.databinding.FragmentListBinding
 import com.szeptun.shoppinglist.entity.ListState
 import com.szeptun.shoppinglist.entity.ShoppingList
+import com.szeptun.shoppinglist.ui.Lists.recycler.ShoppingListAdapter
 import com.szeptun.shoppinglist.ui.ShoppingList.ShoppingListActivity
 import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
@@ -43,6 +41,7 @@ class ListsFragment : DaggerFragment() {
             observeItemClicks()
             observeItems()
             onAddButtonClick()
+            observeArchiveClicks()
         }.root
 
     override fun onDestroyView() {
@@ -81,6 +80,18 @@ class ListsFragment : DaggerFragment() {
             .addTo(disposable)
     }
 
+    private fun observeArchiveClicks() {
+        listAdapter.archiveItemStream
+            .subscribe({
+                val selectedItemShoppingList = listAdapter.items[it]
+                viewModel.saveList(selectedItemShoppingList.copy(listState = ListState.ARCHIVE))
+            }, {
+                Log.e(ERROR_TAG, "Error while observing RV clicks")
+            })
+            .addTo(disposable)
+    }
+
+
     private fun openShoppingListActivity(shoppingList: ShoppingList? = null) {
         val intent = Intent(activity, ShoppingListActivity::class.java).apply {
             putExtra(ShoppingListActivity.SHOPPING_LIST, shoppingList)
@@ -105,24 +116,4 @@ class ListsFragment : DaggerFragment() {
         private const val LIST_STATE = "list_state"
     }
 
-}
-
-@BindingAdapter("fabVisibility")
-fun FloatingActionButton.fabVisibility(listState: ListState?) {
-    listState?.let {
-        visibility = when (listState) {
-            ListState.ACTIVE -> View.VISIBLE
-            ListState.ARCHIVE -> View.GONE
-        }
-    }
-}
-
-@BindingAdapter("btnVisibility")
-fun Button.btnVisibility(listState: ListState?){
-    listState?.let {
-        visibility = when (listState) {
-            ListState.ACTIVE -> View.VISIBLE
-            ListState.ARCHIVE -> View.GONE
-        }
-    }
 }
