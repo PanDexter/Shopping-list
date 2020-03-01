@@ -9,17 +9,10 @@ import com.szeptun.shoppinglist.entity.Product
 import com.szeptun.shoppinglist.entity.ShoppingList
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class ShoppingListRepository @Inject constructor(private val productsListDao: ProductsListDao) {
-
-    fun getAllLists(): Observable<List<ShoppingList>> =
-        productsListDao.getAllLists()
-            .filter { it.isNotEmpty() }
-            .map(::mapProductsListToShoppingList)
-            .toObservable()
 
     fun getListsByState(listState: ListState): Flowable<List<ShoppingList>> =
         productsListDao.getListByState(listState)

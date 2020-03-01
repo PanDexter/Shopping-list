@@ -13,10 +13,6 @@ import io.reactivex.Single
 abstract class ProductsListDao {
 
     @Transaction
-    @Query("SELECT * FROM ShoppingListEntity")
-    abstract fun getAllLists(): Single<List<ProductsList>>
-
-    @Transaction
     @Query("SELECT * FROM ShoppingListEntity WHERE listState =:listState")
     abstract fun getListByState(listState: ListState): Flowable<List<ProductsList>>
 
